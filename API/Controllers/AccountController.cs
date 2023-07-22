@@ -3,6 +3,7 @@ using System.Text;
 using API.Data;
 using API.Dtos;
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,14 +12,21 @@ namespace API.Controllers;
 public class AccountController : BaseAPIController
 {
     private readonly DataContext _context;
+    private readonly ITokenService _tokenService;
 
-    public AccountController(DataContext context)
+    public AccountController(DataContext context, ITokenService tokenService)
     {
         _context = context;
+        _tokenService = tokenService;
+    }
+
+    private async Task<bool> IsUserExsist(string username)
+    {
+        return await _context.Users.AnyAsync(item => item.UserName == username.ToLower());
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<AppUser>> Register(RegisterDto dto)
+    public async Task<ActionResult<UserDto>> Register(RegisterDto dto)
     {
         if (await IsUserExsist(dto.Username)) return BadRequest("");
 
@@ -34,11 +42,33 @@ public class AccountController : BaseAPIController
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        return user;
+        return new UserDto
+        {
+            Username = user.UserName,
+            Token = _tokenService.CreateToken(user)
+        };
     }
 
-    private async Task<bool> IsUserExsist(string username)
+    [HttpPost("login")]
+    public async Task<ActionResult<UserDto>> Login(LoginDto dto)
     {
-        return await _context.Users.AnyAsync(item => item.UserName == username.ToLower());
+        AppUser user = await _context.Users.SingleOrDefaultAsync(item => item.UserName == dto.Username);
+
+        if (user == null)
+            return Unauthorized("Invalid Username!");
+
+        using HMACSHA512 hmac = new(user.PasswordSalt);
+
+        var computedHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password));
+
+        foreach (var (item, index) in computedHash.Select((item, index) => (item, index)))
+            if (item != user.PasswordHash[index])
+                return Unauthorized("Invalid Password!");
+
+        return new UserDto
+        {
+            Username = user.UserName,
+            Token = _tokenService.CreateToken(user)
+        }; ;
     }
 }
