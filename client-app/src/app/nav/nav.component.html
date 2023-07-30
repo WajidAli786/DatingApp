@@ -1,0 +1,59 @@
+<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+  <div class="container">
+    <a class="navbar-brand" href="#">Dating App</a>
+
+    <ul
+      class="navbar-nav me-auto mb-2 mb-md-0"
+      *ngIf="accountService.currentUser$ | async"
+    >
+      <li class="nav-item">
+        <a class="nav-link" href="#">Home</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Link</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link">Messages</a>
+      </li>
+    </ul>
+
+    <div
+      class="dropdown"
+      *ngIf="accountService.currentUser$ | async; else elseReference"
+      dropdown
+    >
+      <a class="dropdown-toggle text-light text-decoration-none" dropdownToggle
+        >Welcome, User</a
+      >
+      <div class="dropdown-menu mt-3" *dropdownMenu>
+        <a class="dropdown-item">Edit Profile</a>
+        <a class="dropdown-item" (click)="logout()">Logout</a>
+      </div>
+    </div>
+
+    <ng-template #elseReference>
+      <form
+        class="d-flex"
+        autocomplete="off"
+        #loginForm="ngForm"
+        (ngSubmit)="login()"
+      >
+        <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          class="form-control me-2"
+          [(ngModel)]="model.username"
+        />
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          class="form-control me-2"
+          [(ngModel)]="model.password"
+        />
+        <button class="btn btn-outline-success" type="submit">Login</button>
+      </form>
+    </ng-template>
+  </div>
+</nav>
