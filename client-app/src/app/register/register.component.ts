@@ -1,4 +1,5 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { noop } from 'rxjs';
 import { AccountService } from '../services/account.service';
 
@@ -11,7 +12,10 @@ export class RegisterComponent implements OnInit {
   model: { username: ''; password: '' } = { username: '', password: '' };
   @Output() cancelRegister = new EventEmitter<boolean>();
 
-  constructor(private accountService: AccountService) {}
+  constructor(
+    private toastr: ToastrService,
+    private accountService: AccountService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -20,7 +24,10 @@ export class RegisterComponent implements OnInit {
       next: () => {
         this.cancel();
       },
-      error: console.log,
+      error: (response) => {
+        const { error } = response;
+        this.toastr.error(error, 'Error!');
+      },
       complete: noop,
     });
   }
