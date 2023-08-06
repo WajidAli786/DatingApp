@@ -24,10 +24,7 @@ export class RegisterComponent implements OnInit {
       next: () => {
         this.cancel();
       },
-      error: (response) => {
-        const { error } = response;
-        this.toastr.error(error, 'Error!');
-      },
+      error: noop,
       complete: noop,
     });
   }
