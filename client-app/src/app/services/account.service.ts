@@ -1,14 +1,15 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, map } from 'rxjs';
+import { environment } from 'src/environments/environment.development';
 import { User } from '../models/user.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccountService {
-  baseUrl: string = `https://localhost:5001/api/`;
-  private currentUserSource = new BehaviorSubject<User | null>(null);
+  baseUrl: string = environment.apiUrl;
+  private currentUserSource = new BehaviorSubject<User | undefined>(undefined);
   currentUser$ = this.currentUserSource.asObservable();
 
   constructor(private http: HttpClient) {}
@@ -45,6 +46,6 @@ export class AccountService {
 
   logout() {
     localStorage.removeItem('user');
-    this.currentUserSource.next(null);
+    this.currentUserSource.next(undefined);
   }
 }
