@@ -1,29 +1,48 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { map, of } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
 import { Member } from '../models/member.model';
 
 @Injectable({
   providedIn: 'root',
 })
-export class MembersService implements OnInit, OnDestroy {
+export class MembersService {
+  members: Member[] = [];
+
   baseUrl = environment.apiUrl;
-  serviceSubscription = new Subscription();
 
   constructor(private http: HttpClient) {}
 
-  ngOnInit(): void {}
-
   getMembers() {
-    return this.http.get<Member[]>(`${this.baseUrl}users`);
+    if (this.members?.length > 0) {
+      return of(this.members);
+    }
+
+    return this.http.get<Member[]>(`${this.baseUrl}users`).pipe(
+      map((members) => {
+        this.members = members;
+        return members;
+      })
+    );
   }
 
   getMember(username: string) {
+    const member = this.members.find((item) => item.userName == username);
+
+    if (member) {
+      return of(member);
+    }
+
     return this.http.get<Member>(`${this.baseUrl}users/${username}`);
   }
 
-  ngOnDestroy(): void {
-    this.serviceSubscription.unsubscribe();
+  updateMember(member: Member) {
+    return this.http.put(`${this.baseUrl}users`, member).pipe(
+      map(() => {
+        const index = this.members.indexOf(member);
+        this.members[index] = { ...this.members[index], ...member };
+      })
+    );
   }
 }
