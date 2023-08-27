@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
+import { FileUploadModule } from 'ng2-file-upload';
 import { BsDropdownModule } from 'ngx-bootstrap/dropdown';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { NgxSpinnerModule } from 'ngx-spinner';
@@ -9,6 +10,7 @@ import { ToastrModule } from 'ngx-toastr';
   declarations: [],
   imports: [
     CommonModule,
+    FileUploadModule,
     TabsModule.forRoot(),
     BsDropdownModule.forRoot(),
     ToastrModule.forRoot({ positionClass: 'toast-bottom-right' }),
@@ -16,6 +18,12 @@ import { ToastrModule } from 'ngx-toastr';
       type: 'line-scale-party',
     }),
   ],
-  exports: [ToastrModule, BsDropdownModule, TabsModule, NgxSpinnerModule],
+  exports: [
+    TabsModule,
+    ToastrModule,
+    BsDropdownModule,
+    NgxSpinnerModule,
+    FileUploadModule,
+  ],
 })
 export class SharedModule {}

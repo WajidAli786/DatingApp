@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, of } from 'rxjs';
-import { environment } from 'src/environments/environment.development';
+import { environment } from 'src/environments/environment';
 import { Member } from '../models/member.model';
 
 @Injectable({
@@ -44,5 +44,13 @@ export class MembersService {
         this.members[index] = { ...this.members[index], ...member };
       })
     );
+  }
+
+  setMainPhoto(photoId: number) {
+    return this.http.put(`${this.baseUrl}users/set-main-photo/${photoId}`, {});
+  }
+
+  deletePhoto(photoId: number) {
+    return this.http.delete(`${this.baseUrl}users/delete-photo/${photoId}`);
   }
 }
