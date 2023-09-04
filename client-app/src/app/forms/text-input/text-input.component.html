@@ -1,0 +1,30 @@
+<div class="mb-3">
+  <input
+    [type]="type"
+    class="form-control"
+    [placeholder]="label"
+    [formControl]="control"
+    [class.is-invalid]="control.touched && control.errors"
+  />
+  <!-- Validation Error For Required -->
+  <div class="invalid-feedback" *ngIf="control.hasError('required')">
+    Please enter a {{ label }}
+  </div>
+
+  <!-- Validation Error For Min Length -->
+  <div class="invalid-feedback" *ngIf="control.errors?.['minlength']">
+    {{ label }} must be atleast
+    {{control.errors?.['minlength'].requiredLength}} characters
+  </div>
+
+  <!-- Validation Error For Max Length -->
+  <div class="invalid-feedback" *ngIf="control.errors?.['maxlength']">
+    {{ label }} must be atmost
+    {{control.errors?.['maxlength'].requiredLength}} characters
+  </div>
+
+  <!-- Validation Error For Password Match   -->
+  <div class="invalid-feedback" *ngIf="control.errors?.['notMatching']">
+    {{ label }} don't match
+  </div>
+</div>

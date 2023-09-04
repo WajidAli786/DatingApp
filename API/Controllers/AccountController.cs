@@ -4,6 +4,7 @@ using API.Data;
 using API.Dtos;
 using API.Entities;
 using API.Interfaces;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,11 +12,13 @@ namespace API.Controllers;
 
 public class AccountController : BaseAPIController
 {
+    private readonly IMapper _mapper;
     private readonly DataContext _context;
     private readonly ITokenService _tokenService;
 
-    public AccountController(DataContext context, ITokenService tokenService)
+    public AccountController(DataContext context, ITokenService tokenService, IMapper mapper)
     {
+        _mapper = mapper;
         _context = context;
         _tokenService = tokenService;
     }
@@ -30,22 +33,22 @@ public class AccountController : BaseAPIController
     {
         if (await IsUserExsist(dto.Username)) return BadRequest("");
 
+        var user = _mapper.Map<AppUser>(dto);
+
         using HMACSHA512 hmac = new();
 
-        AppUser user = new()
-        {
-            UserName = dto.Username.ToLower(),
-            PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password)),
-            PasswordSalt = hmac.Key
-        };
+        user.UserName = dto.Username.ToLower();
+        user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(dto.Password));
+        user.PasswordSalt = hmac.Key;
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
         return new UserDto
         {
+            KnownAs = user.KnownAs,
             Username = user.UserName,
-            Token = _tokenService.CreateToken(user)
+            Token = _tokenService.CreateToken(user),
         };
     }
 
@@ -67,6 +70,7 @@ public class AccountController : BaseAPIController
 
         return new UserDto
         {
+            KnownAs = user.KnownAs,
             Username = user.UserName,
             Token = _tokenService.CreateToken(user),
             PhotoUrl = user.Photos.FirstOrDefault(item => item.IsMain)?.Url
