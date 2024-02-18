@@ -9,6 +9,8 @@ import { AppComponent } from './app.component';
 import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { TestErrorComponent } from './errors/test-error/test-error.component';
+import { DatePickerComponent } from './forms/date-picker/date-picker.component';
+import { TextInputComponent } from './forms/text-input/text-input.component';
 import { HomeComponent } from './home/home.component';
 import { ErrorInterceptor } from './interceptors/error.interceptor';
 import { JwtInterceptor } from './interceptors/jwt.interceptor';
@@ -22,8 +24,6 @@ import { MessagesComponent } from './messages/messages.component';
 import { SharedModule } from './modules/shared.module';
 import { NavComponent } from './nav/nav.component';
 import { RegisterComponent } from './register/register.component';
-import { TextInputComponent } from './forms/text-input/text-input.component';
-import { DatePickerComponent } from './forms/date-picker/date-picker.component';
 
 @NgModule({
   declarations: [

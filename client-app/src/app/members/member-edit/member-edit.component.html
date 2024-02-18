@@ -49,7 +49,7 @@
     </div>
   </div>
   <div class="col-8">
-    <tabset class="member-tabset">
+    <tabset class="member-tabset" #memberTabs>
       <!-- Abbout Tab -->
       <tab heading="About {{ member.knownAs }}">
         <form id="editForm" #editForm="ngForm" (ngSubmit)="updateMember()">
